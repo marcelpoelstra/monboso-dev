@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<smil xmlns="http://www.w3.org/2001/SMIL20/Language">
+  <head>
+    <meta name="vod2live" content="true" />
+    <meta name="vod2live_start_time" content="2022-12-11T06:00:00Z" />
+    <meta name="hls_client_manifest_version" content="5" />
+    <meta name="hls_minimum_fragment_length" content="48/25" />
+    <meta name="mpd_minimum_fragment_length" content="48/25" />
+    <meta name="mpd_segment_template" content="time" />
+    <meta name="timed_metadata" content="true" />
+    <meta name="splice_media" content="true" />
+  </head>
+  <body>
+    <seq>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com1/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com2/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com3/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com4/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com5/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com6/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com7/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com8/index.ism"/>
+    </seq>
+  </body>
+</smil>
