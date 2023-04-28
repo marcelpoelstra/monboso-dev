@@ -17,15 +17,7 @@ x-vc-environment:
   - LOG_LEVEL
   - RABBITMQ_DEFAULT_USER
   - RABBITMQ_DEFAULT_PASS
-  # Origin only
-  - ORIGIN_PORT
-  - REMOTE_STORAGE_URL
-  # Virtual Channel API only
-  - API_PORT
-  - API_KEY
-  - API_INSECURE
-  - REMIX_TASK_TIMEOUT
-  # RabbitMQ only
+   #RabbitMQ only
   - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
   - DAYS_TO_KEEP_TRANSITIONS_FOR
 
@@ -36,13 +28,13 @@ x-vc-volumes:
     target: /channels
 
 services:
-
   # unified origin
   origin:
     image: ghcr.io/unifiedstreaming/virtual-channel-origin:1.12.4
     logging: *default-logging
     restart: always
-    environment: *default-vc-environment
+    env_file:
+      - vc-origin.env
     volumes:
       - type: bind
         source: ./channels
@@ -52,26 +44,23 @@ services:
       - "traefik.http.routers.origin.entrypoints=web"
       - "traefik.http.routers.origin.rule=PathPrefix(`/`)"
 
-  # Virtual Channel application
+  # Virtual Channel API
   virtual-channel-api:
     image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.4
     restart: always
     logging: *default-logging
-    environment: *default-vc-environment
+    env_file:
+      - vc-api.env
     volumes: *default-vc-volumes
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips *
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.entrypoints=api"
-      - "traefik.http.routers.api.rule=PathPrefix(`/`)"
-      - "traefik.http.services.api.loadbalancer.server.port=8000"
 
   # Manifest Proxy application
   manifest-proxy:
     image: ghcr.io/unifiedstreaming/virtual-channel-manifest-proxy:1.12.4
     restart: always
     logging: *default-logging
-    environment: *default-vc-environment
+    env_file:
+      - manifest-proxy.env
     volumes:
       - type: bind
         source: ./channels
@@ -134,32 +123,15 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-  traefik:
-    image: traefik:v2.7
-    logging: *default-logging
-    restart: always
-    env_file:
-      - traefik.env
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.api.address=:8000"
-      - "--entryPoints.api.forwardedHeaders.insecure"
-    ports:
-      - ${API_PORT}:8000
-
   vod-origin:
     image:   unifiedstreaming/origin:latest
     logging: *default-logging
     restart: always
     deploy:
-      replicas: 2
+      replicas: 1
     env_file:
       - vod-origin.env
-  
+      
   nginx-proxy:
     logging: *default-logging
     image: nginxproxy/nginx-proxy:alpine
@@ -171,19 +143,17 @@ services:
       - nginx.env
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./conf.d.proxy/proxy.conf:/etc/nginx/proxy.conf
-      - certs:/etc/nginx/certs
-      - vhostd:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html 
-
+      - /tmp/nginx_cache:/var/cache/nginx
+      - ./nginx-conf/noproxy.conf:/etc/nginx/conf.d/noproxy.conf:ro
+      - ./nginx-conf/proxy.conf:/etc/nginx/proxy.conf
+      - ./nginx-conf/certs:/etc/nginx/certs
+      - ./nginx-conf/vhost.d:/etc/nginx/vhost.d:ro
+      - ./nginx-conf/html:/usr/share/nginx/html 
+  
 volumes:
   rabbitmq_data:
     driver: local
   redis_data:
     driver: local
   certs:
-    driver: local
-  vhostd:
-    driver: local 
-  html:
     driver: local
