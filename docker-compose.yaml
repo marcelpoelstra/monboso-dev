@@ -138,7 +138,7 @@ services:
       - nginx.env
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /tmp/nginx_cache:/var/cache/nginx
+      - /tmp:/var/cache/nginx/tmp
       - ./nginx-conf/noproxy.conf:/etc/nginx/conf.d/noproxy.conf:ro
       - ./nginx-conf/proxy.conf:/etc/nginx/proxy.conf
       - ./nginx-conf/certs:/etc/nginx/certs
