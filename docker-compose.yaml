@@ -30,7 +30,7 @@ x-vc-volumes:
 services:
   # unified origin
   origin:
-    image: ghcr.io/unifiedstreaming/virtual-channel-origin:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-origin:1.12.2
     logging: *default-logging
     restart: always
     env_file:
@@ -42,7 +42,7 @@ services:
 
   # Virtual Channel API
   virtual-channel-api:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
     restart: always
     logging: *default-logging
     env_file:
@@ -54,7 +54,7 @@ services:
 
   # Manifest Proxy application
   manifest-proxy:
-    image: ghcr.io/unifiedstreaming/virtual-channel-manifest-proxy:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-manifest-proxy:1.12.2
     restart: always
     logging: *default-logging
     env_file:
@@ -67,7 +67,7 @@ services:
      
      
   virtual-channel-worker-vod2live:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -75,7 +75,7 @@ services:
     command: celery -A app.tasks.vod2live worker -Q vod2live --loglevel info
 
   virtual-channel-worker-transition:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -83,7 +83,7 @@ services:
     command: celery -A app.tasks.trigger_transition worker -Q trigger_transition --loglevel info
 
   virtual-channel-worker-housekeeping:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -91,7 +91,7 @@ services:
     command: celery -A app.tasks.housekeeping worker --loglevel info
 
   virtual-channel-celery-beat:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.4
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -138,9 +138,9 @@ services:
       - nginx.env
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /tmp:/var/cache/nginx/tmp
-      - ./nginx-conf/noproxy.conf:/etc/nginx/conf.d/noproxy.conf:ro
-      - ./nginx-conf/proxy.conf:/etc/nginx/proxy.conf
+     # - /tmp:/var/cache/nginx/tmp
+     #- ./nginx-conf/noproxy.conf:/etc/nginx/conf.d/noproxy.conf:ro
+     #- ./nginx-conf/proxy.conf:/etc/nginx/proxy.conf
       - ./nginx-conf/certs:/etc/nginx/certs
       - ./nginx-conf/vhost.d:/etc/nginx/vhost.d:ro
       - ./nginx-conf/html:/usr/share/nginx/html 
