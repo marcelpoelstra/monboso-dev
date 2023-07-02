@@ -17,7 +17,15 @@ x-vc-environment:
   - LOG_LEVEL
   - RABBITMQ_DEFAULT_USER
   - RABBITMQ_DEFAULT_PASS
-   #RabbitMQ only
+  # Origin only
+  - ORIGIN_PORT
+  - REMOTE_STORAGE_URL
+  # Virtual Channel API only
+  - API_PORT
+  - API_KEY
+  - API_INSECURE
+  - REMIX_TASK_TIMEOUT
+  # RabbitMQ only
   - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
   - DAYS_TO_KEEP_TRANSITIONS_FOR
 
@@ -30,44 +38,54 @@ x-vc-volumes:
 services:
   # unified origin
   origin:
-    image: ghcr.io/unifiedstreaming/virtual-channel-origin:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-origin:$VC_VERSION
     logging: *default-logging
     restart: always
-    env_file:
-      - vc-origin.env
+    environment: *default-vc-environment
     volumes:
       - type: bind
+        source: ./apache-conf/status.conf
+        target: /etc/apache2/conf-enabled/status.conf    
+      - type: bind
         source: ./channels
-        target: /var/www/unified-origin/
+        target: /var/www/unified-origin/    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.origin.entrypoints=web"
+      - "traefik.http.routers.origin.rule=PathPrefix(`/`)"
 
-  # Virtual Channel API
+  # Virtual Channel application
   virtual-channel-api:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:$VC_VERSION
     restart: always
     logging: *default-logging
-    env_file:
-      - vc-api.env
+    environment: *default-vc-environment
     volumes: *default-vc-volumes
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips *
-    ports:
-      - 8000:8000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.entrypoints=api"
+      - "traefik.http.routers.api.rule=PathPrefix(`/`)"
+      - "traefik.http.services.api.loadbalancer.server.port=8000"
 
   # Manifest Proxy application
   manifest-proxy:
-    image: ghcr.io/unifiedstreaming/virtual-channel-manifest-proxy:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-manifest-proxy:$VC_VERSION
     restart: always
     logging: *default-logging
-    env_file:
-      - manifest-proxy.env
+    environment: *default-vc-environment
     volumes:
       - type: bind
         source: ./channels
         target: /channels
     command: uvicorn app.main:app --host 0.0.0.0 --port 80 --proxy-headers --forwarded-allow-ips *
-     
-     
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.manifest-proxy.rule=Path(`/{manifest:.*\\.ism[l]?/.*\\.(mpd|m3u8)}`)"
+      - "traefik.http.routers.manifest-proxy.entrypoints=web"
+
   virtual-channel-worker-vod2live:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:$VC_VERSION
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -75,7 +93,7 @@ services:
     command: celery -A app.tasks.vod2live worker -Q vod2live --loglevel info
 
   virtual-channel-worker-transition:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:$VC_VERSION
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -83,7 +101,7 @@ services:
     command: celery -A app.tasks.trigger_transition worker -Q trigger_transition --loglevel info
 
   virtual-channel-worker-housekeeping:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:$VC_VERSION
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -91,7 +109,7 @@ services:
     command: celery -A app.tasks.housekeeping worker --loglevel info
 
   virtual-channel-celery-beat:
-    image: ghcr.io/unifiedstreaming/virtual-channel-app:1.12.2
+    image: ghcr.io/unifiedstreaming/virtual-channel-app:$VC_VERSION
     restart: always
     logging: *default-logging
     environment: *default-vc-environment
@@ -118,15 +136,35 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  traefik:
+    image: traefik:v2.7
+    logging: *default-logging
+    restart: always
+    env_file:
+      - traefik.env
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.api.address=:8000"
+      - "--entryPoints.api.forwardedHeaders.insecure"
+    ports:
+      - ${API_PORT}:8000
+
   vod-origin:
     image:   unifiedstreaming/origin:latest
-    logging: *default-logging
     restart: always
     deploy:
       replicas: 1
     env_file:
       - vod-origin.env
-      
+    volumes:
+      - type: bind
+        source: ./apache-conf/status.conf
+        target: /etc/apache2/conf.d/status.conf   
+  
   nginx-proxy:
     logging: *default-logging
     image: nginxproxy/nginx-proxy:alpine
@@ -136,15 +174,57 @@ services:
       - '80:80'
     env_file:
       - nginx.env
+    networks:
+      default:
+        aliases:
+          - nginx-status
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-     # - /tmp:/var/cache/nginx/tmp
-     #- ./nginx-conf/noproxy.conf:/etc/nginx/conf.d/noproxy.conf:ro
-     #- ./nginx-conf/proxy.conf:/etc/nginx/proxy.conf
+      - /var/log/nginx/:/var/log/nginx/
+      - ./nginx-conf/nginx_status.conf:/etc/nginx/conf.d/nginx_status.conf:ro
+      - ./nginx-conf/proxy.conf:/etc/nginx/proxy.conf:ro
+      - ./nginx-conf/templates:/app/templates
+      - ./nginx-conf/static/prefetch.js:/usr/share/nginx/html/static/prefetch.js:ro
       - ./nginx-conf/certs:/etc/nginx/certs
-      - ./nginx-conf/vhost.d:/etc/nginx/vhost.d:ro
-      - ./nginx-conf/html:/usr/share/nginx/html 
-  
+      - ./nginx-conf/vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html 
+      - type: tmpfs
+        target: /var/cache/nginx
+        tmpfs:
+          size: 1G
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 100M
+
+#monitoring setup 
+  netdata:
+    image: netdata/netdata:v1.40.0
+    container_name: netdata
+    hostname: mrs-prod
+    env_file:
+      - netdata.env
+    ports:
+      - 19999:19999
+    restart: unless-stopped
+    pid: host
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - ./netdataconfig/netdata:/etc/netdata:ro
+      - netdatalib:/var/lib/netdata
+      - netdatacache:/var/cache/netdata
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/log/nginx:/var/log/nginx:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+
+
 volumes:
   rabbitmq_data:
     driver: local
@@ -152,3 +232,11 @@ volumes:
     driver: local
   certs:
     driver: local
+  vhostd:
+    driver: local 
+  html:
+    driver: local
+  netdatalib:
+    driver: local 
+  netdatacache:
+    driver: local 
