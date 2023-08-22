@@ -12,14 +12,14 @@
   </head>
   <body>
     <seq>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com1/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com2/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com3/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com4/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com5/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com6/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com7/index.ism"/>
-        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/content/com8/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com1/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com2/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com3/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com4/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com5/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com6/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com7/index.ism"/>
+        <video src="https://objectstorage.nl-ams-1.scalia.io/mrs-video-content/scalia-media/video/com8/index.ism"/>
     </seq>
   </body>
 </smil>

@@ -6,7 +6,6 @@ x-logging:
     max-size: '1G'
     max-file: '5'
   driver: json-file
-
 x-vc-environment:
   # Env vars common to most containers
   &default-vc-environment
@@ -19,7 +18,7 @@ x-vc-environment:
   - RABBITMQ_DEFAULT_PASS
   # Origin only
   - ORIGIN_PORT
-  - REMOTE_STORAGE_URL
+  - REMOTE_STORAGE_URLcd 
   # Virtual Channel API only
   - API_PORT
   - API_KEY
@@ -199,21 +198,21 @@ services:
 
 #monitoring setup 
   netdata:
-    image: netdata/netdata:v1.40.0
+    image: netdata/netdata:v1.42.0
     container_name: netdata
     hostname: mrs-prod
     env_file:
       - netdata.env
     ports:
       - 19999:19999
-    restart: unless-stopped
+    restart: always
     pid: host
     cap_add:
       - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
     volumes:
-      - ./netdataconfig/netdata:/etc/netdata:ro
+      - ./netdataconfig/netdata:/etc/netdata
       - netdatalib:/var/lib/netdata
       - netdatacache:/var/cache/netdata
       - /etc/passwd:/host/etc/passwd:ro
