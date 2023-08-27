@@ -44,7 +44,16 @@ services:
     volumes:
       - type: bind
         source: ./apache-conf/status.conf
-        target: /etc/apache2/conf-enabled/status.conf    
+        target: /etc/apache2/conf-enabled/status.conf
+      - type: bind
+        source: ./apache-conf/sunset.conf
+        target: /etc/apache2/conf-enabled/sunset.conf
+      - type: bind
+        source: ./apache-conf/dash_status.conf
+        target: /etc/apache2/conf-enabled/dash_status.conf
+      - type: bind
+        source: ./apache-conf/no_log_netdata.conf
+        target: /etc/apache2/conf-enabled/no_log_netdata.conf
       - type: bind
         source: ./channels
         target: /var/www/unified-origin/    
