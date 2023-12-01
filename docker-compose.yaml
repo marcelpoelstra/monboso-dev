@@ -27,6 +27,10 @@ x-vc-environment:
   # RabbitMQ only
   - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
   - DAYS_TO_KEEP_TRANSITIONS_FOR
+    # Scheduled tasks
+  - HOUSEKEEPING_CRON_HOUR
+  - HOUSEKEEPING_CRON_MINUTE
+  - CHECK_CHANNEL_SECONDS
 
 x-vc-volumes:
   &default-vc-volumes
@@ -122,7 +126,7 @@ services:
     logging: *default-logging
     environment: *default-vc-environment
     volumes: *default-vc-volumes
-    command: celery -A app.housekeeping beat --loglevel info
+    command: celery -A app.task_schedule beat --loglevel info
 
   # redis and rabbitmq for task queue and results storage
   redis:
