@@ -31,7 +31,6 @@ x-vc-environment:
   - HOUSEKEEPING_CRON_HOUR
   - HOUSEKEEPING_CRON_MINUTE
   - CHECK_CHANNEL_SECONDS
-#
 
 x-vc-volumes:
   &default-vc-volumes
