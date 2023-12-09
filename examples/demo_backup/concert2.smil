@@ -12,7 +12,7 @@
   </head>
   <body>
     <seq>
-      <video src="https://mrs-video-content.objectstorage.nl-ams-1.scalia.io/scalia-media/video/fak glb17/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/fak glb17/index.ism"/>
     </seq>
   </body>
 </smil>
