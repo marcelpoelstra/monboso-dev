@@ -19,6 +19,8 @@ services:
     image: ghcr.io/unifiedstreaming/virtual-channel-origin:${VC_VERSION}
     logging: *default-logging
     restart: always
+    deploy:
+      replicas: 2
     env_file:
       - vc-origin.env
     volumes:
