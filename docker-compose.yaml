@@ -65,6 +65,7 @@ services:
         target: /channels
     command: uvicorn app.main:app --host 0.0.0.0 --port 80 --proxy-headers --forwarded-allow-ips *
 
+  # Virtual Channel workers
   virtual-channel-worker-vod2live:
     image: ghcr.io/unifiedstreaming/virtual-channel-app:${VC_VERSION}
     restart: always
