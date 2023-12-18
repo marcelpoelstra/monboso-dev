@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<smil xmlns="http://www.w3.org/2001/SMIL20/Language">
+  <head>
+    <meta name="vod2live" content="true" />
+    <meta name="vod2live_start_time" content="2022-12-11T06:00:00Z" />
+    <meta name="hls_client_manifest_version" content="5" />
+    <meta name="hls_minimum_fragment_length" content="48/25" />
+    <meta name="mpd_minimum_fragment_length" content="48/25" />
+    <meta name="mpd_segment_template" content="time" />
+    <meta name="timed_metadata" content="true" />
+    <meta name="splice_media" content="true" />
+  </head>
+  <body>
+    <seq>
+      <video src="https://s3.marcelpoelstra.cloud/video/ALIENS_DARK_DESCENT_Trailer_2023/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/bol_kerst_De_winkel_van_kerstmakers/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/Chocomel_TV_Commercial_2023_When_life_gives_you_Chocomel/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/I_WANNA_DANCE_WITH_SOMEBODY_Official_Trailer_HD/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/John_Wick_Chapter_4_2023_Final_Trailer_Keanu_Reeves_Donnie_Yen_Bill_Skarsgard/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/THANKSGIVING_Official_Trailer_HD/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/NAPOLEON_Official_Trailer_HD/index.ism"/>
+    </seq>
+  </body>
+</smil>

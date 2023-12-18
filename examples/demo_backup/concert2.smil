@@ -12,7 +12,7 @@
   </head>
   <body>
     <seq>
-      <video src="https://s3.marcelpoelstra.cloud/video/fak glb17/index.ism"/>
+      <video src="https://s3.marcelpoelstra.cloud/video/fak_glb17/index.ism"/>
     </seq>
   </body>
 </smil>
