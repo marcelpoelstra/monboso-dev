@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bitmovin Player Demo</title>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="text/html; charset=utf-8" />
+
+  <!-- Bitmovin Player -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bitmovin-player@8/bitmovinplayer.js"></script>
+
+  <style>
+    .player-wrapper {
+      width: 90%;
+      margin: 20px auto;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+    }
+  </style>
+</head>
+<body>
+<div class="player-wrapper">
+  <div id="player"></div>
+</div>
+
+<script type="text/javascript">
+  var conf = {
+    key: '036bbade-bf82-4bbd-8a2a-4a5f38b169db',
+    analytics: {
+      key: '328ff0fd-1740-439e-9e94-5bea675e5467',
+      title: 'undefined',
+      videoId: 'wizard-untitled-1711090035936',
+    },
+  };
+
+  var source = {
+    title: '',
+    hls: 'https://cdn-dev.marcelpoelstra.cloud/Trains.isml/index.m3u8',
+  };
+
+  var player = new bitmovin.player.Player(document.getElementById('player'), conf);
+  player.load(source);
+</script>
+
+</body>
+</html>

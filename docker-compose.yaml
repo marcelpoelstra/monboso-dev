@@ -134,7 +134,7 @@ services:
     volumes:
       - type: bind
         source: ./apache-conf/status.conf
-        target: /etc/apache2/conf.d/status.conf   
+        target: /etc/apache2/conf.d/status.conf 
 
   # Nginx chield cache
   nginx-proxy:
@@ -195,8 +195,12 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /etc/os-release:/host/etc/os-release:ro
-
-
+  
+  player:
+      build: player
+      env_file:
+      - player.env
+ 
 volumes:
   rabbitmq_data:
     driver: local
