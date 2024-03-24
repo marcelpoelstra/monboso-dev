@@ -195,12 +195,15 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /etc/os-release:/host/etc/os-release:ro
-  
+      
+# Demo Bitmovin player  
   player:
-      build: player
-      env_file:
+    build: player
+    env_file:
       - player.env
- 
+    volumes:
+      - ./player/html:/usr/local/apache2/htdocs
+
 volumes:
   rabbitmq_data:
     driver: local
