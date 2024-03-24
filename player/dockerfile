@@ -1,5 +1,12 @@
 FROM httpd:2.4-alpine
+
 WORKDIR /usr/local/apache2/htdocs/
 RUN rm -rf ./* 
+RUN echo 'FileETag None' >> /usr/local/apache2/conf/httpd.conf && \
+    echo '<IfModule mod_headers.c>' >> /usr/local/apache2/conf/httpd.conf && \
+    echo '    Header set Cache-Control "no-cache, no-store, must-revalidate"' >> /usr/local/apache2/conf/httpd.conf && \
+    echo '    Header set Pragma "no-cache"' >> /usr/local/apache2/conf/httpd.conf && \
+    echo '    Header set Expires 0' >> /usr/local/apache2/conf/httpd.conf && \
+    echo '</IfModule>' >> /usr/local/apache2/conf/httpd.conf
 EXPOSE 80
 CMD ["httpd-foreground"]
