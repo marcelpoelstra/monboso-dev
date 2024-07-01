@@ -195,15 +195,22 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /etc/os-release:/host/etc/os-release:ro
-      
-# Demo Bitmovin player  
+
+# BETA leonardo dashboard
+  app:
+    image: drienultwee/monboso-virtual-channels-app:master
+    env_file:
+      - app.env
+    ports: 
+      - 9000:9000
+
+# BETA Demo Bitmovin player  
   player:
     build: player
     env_file:
       - player.env
     volumes:
       - ./player/html:/usr/local/apache2/htdocs
-
 
 volumes:
   rabbitmq_data:

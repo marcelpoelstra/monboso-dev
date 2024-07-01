@@ -1,0 +1,40 @@
+FROM php:8.1.0-apache
+
+# Arguments defined in docker-compose.yml
+#ARG user
+#ARG uid
+ARG user=www-data
+ARG uid=100
+
+# Install system dependencies
+RUN apt update -y && apt dist-upgrade -y
+RUN apt install -y  git \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip 
+    
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install PHP extensions
+RUN docker-php-ext-install gettext intl pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) gd
+
+
+
+
+
+
+
+
+
+
